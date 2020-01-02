@@ -1,10 +1,12 @@
 name: Android CI
 
-on: [push]
+on:
+  push:
+  pull_request:
+    types: [synchronize, opened, reopened, closed]
 
 jobs:
   build:
-
     runs-on: ubuntu-latest
 
     steps:
@@ -15,11 +17,40 @@ jobs:
         java-version: 1.8
     - name: Build with Gradle
       run: ./gradlew build
-    - name: Distribute App
+
+    - name: Distribute App for master
+      if: github.ref == 'master'
       run: |
         curl \
          -F "token=${{secrets.DEPLOYGATE_TOKEN}}" \
          -F "file=@app/build/outputs/apk/debug/app-debug.apk" \
          -F "message=https://github.com/jiikko/first_android_app/commit/`git rev-parse --short $GITHUB_SHA`" \
-         -F "distribution_name=$GITHUB_HEAD_REF" \
+         -F "distribution_name='first application(master)'" \
          https://deploygate.com/api/users/jiikko/apps
+    - name: Distribute App
+      if: github.event.action == 'opened' || github.event.action == 'reopened' || github.event.action == 'synchronize'
+      run: |
+        curl \
+         -F "token=${{secrets.DEPLOYGATE_TOKEN}}" \
+         -F "file=@app/build/outputs/apk/debug/app-debug.apk" \
+         -F "message=https://github.com/jiikko/first_android_app/commit/`git rev-parse --short $GITHUB_SHA`" \
+         -F "distribution_name=first-application(#${{ github.event.number }})" \
+         https://deploygate.com/api/users/jiikko/apps
+
+  cleanup:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v1
+    - name: set up JDK 1.8
+      uses: actions/setup-java@v1
+      with:
+        java-version: 1.8
+
+    - name: Cleanup
+      if: github.event.action == 'closed'
+      run: |
+        curl \
+          -X DELETE \
+          -F "token=${{secrets.DEPLOYGATE_TOKEN}}" \
+          -F "distribution_name=first-application(#${{ github.event.number }})" \
+          https://deploygate.com/api/users/jiikko/platforms/android/apps/com.example.firstapplication/distributions

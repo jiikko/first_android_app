@@ -32,5 +32,5 @@ jobs:
          -F "token=${{secrets.DEPLOYGATE_TOKEN}}" \
          -F "file=@app/build/outputs/apk/debug/app-debug.apk" \
          -F "message=https://github.com/jiikko/first_android_app/commit/`git rev-parse --short $GITHUB_SHA`" \
-         -F "distribution_name=first application(#`echo $GITHUB_EVENT_PATH | jq -r`".number")" \
+         -F "distribution_name=first-application(#`echo $GITHUB_EVENT_PATH | grep -o '[0-9]*$'`)" \
          https://deploygate.com/api/users/jiikko/apps

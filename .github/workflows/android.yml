@@ -16,21 +16,21 @@ jobs:
     - name: Build with Gradle
       run: ./gradlew build
 
-    if: github.ref == 'master'
-      - name: Distribute App for master
-        run: |
-          curl \
-           -F "token=${{secrets.DEPLOYGATE_TOKEN}}" \
-           -F "file=@app/build/outputs/apk/debug/app-debug.apk" \
-           -F "message=https://github.com/jiikko/first_android_app/commit/`git rev-parse --short $GITHUB_SHA`" \
-           -F "distribution_name='first application(master)'" \
-           https://deploygate.com/api/users/jiikko/apps
-    if: github.ref != 'master'
-      - name: Distribute App
-        run: |
-          curl \
-           -F "token=${{secrets.DEPLOYGATE_TOKEN}}" \
-           -F "file=@app/build/outputs/apk/debug/app-debug.apk" \
-           -F "message=https://github.com/jiikko/first_android_app/commit/`git rev-parse --short $GITHUB_SHA`" \
-           -F "distribution_name=first application(#`echo $GITHUB_EVENT_PATH | jq -r`".number")" \
-           https://deploygate.com/api/users/jiikko/apps
+    - name: Distribute App for master
+      if: github.ref == 'master'
+      run: |
+        curl \
+         -F "token=${{secrets.DEPLOYGATE_TOKEN}}" \
+         -F "file=@app/build/outputs/apk/debug/app-debug.apk" \
+         -F "message=https://github.com/jiikko/first_android_app/commit/`git rev-parse --short $GITHUB_SHA`" \
+         -F "distribution_name='first application(master)'" \
+         https://deploygate.com/api/users/jiikko/apps
+    - name: Distribute App
+      if: github.ref != 'master'
+      run: |
+        curl \
+         -F "token=${{secrets.DEPLOYGATE_TOKEN}}" \
+         -F "file=@app/build/outputs/apk/debug/app-debug.apk" \
+         -F "message=https://github.com/jiikko/first_android_app/commit/`git rev-parse --short $GITHUB_SHA`" \
+         -F "distribution_name=first application(#`echo $GITHUB_EVENT_PATH | jq -r`".number")" \
+         https://deploygate.com/api/users/jiikko/apps

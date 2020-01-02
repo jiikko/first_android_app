@@ -22,4 +22,4 @@ jobs:
          -F "file=@app/build/outputs/apk/debug/app-debug.apk" \
          -F "message=https://github.com/jiikko/first_android_app/commit/`git rev-parse --short $GITHUB_SHA`" \
          -F "distribution_name=$GITHUB_HEAD_REF" \
-         https://deploygate.com/api/jiikko/apps
+         https://deploygate.com/api/users/jiikko/apps

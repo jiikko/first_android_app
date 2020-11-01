@@ -35,7 +35,7 @@ workflows:
         - app_path: $BITRISE_APK_PATH
         - owner_name: dg_kawaguchi
         - api_key: $API_KEY
-        - message: "$GIT_CLONE_COMMIT_MESSAGE_SUBJECT"
+        - message: "GIT_CLONE_COMMIT_MESSAGE_SUBJECT: $GIT_CLONE_COMMIT_MESSAGE_SUBJECT, BITRISE_GIT_MESSAGE: $BITRISE_GIT_MESSAGE "
         is_always_run: true
     - cache-push@2: {}
   deploygate:
